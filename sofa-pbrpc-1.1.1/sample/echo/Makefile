@@ -37,8 +37,8 @@ LDFLAGS += -L$(ZLIB_DIR)/lib -lpthread -lz
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-    LDFLAGS += -lrt
-else
+    LDFLAGS += -lrt	# man librt: librt, libposix4 - POSIX.1b Realtime Extensions library
+else	
     ifeq ($(UNAME_S),Darwin)
 		LDFLAGS += -undefined dynamic_lookup
     endif

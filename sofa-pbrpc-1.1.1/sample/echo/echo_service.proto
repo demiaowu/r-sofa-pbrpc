@@ -1,6 +1,7 @@
-package sofa.pbrpc.test;
+// 名字空间
+package sofa.pbrpc.test;	
 
-option cc_generic_services = true;
+option cc_generic_services = true;	// 生成C++代码
 option java_generic_services = true;
 
 message EchoRequest {
@@ -11,6 +12,7 @@ message EchoResponse {
     required string message = 1;
 }
 
+// 定义服务
 service EchoServer {
     rpc Echo(EchoRequest) returns(EchoResponse);
 }

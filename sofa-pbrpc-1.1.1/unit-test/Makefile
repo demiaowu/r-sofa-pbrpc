@@ -14,7 +14,7 @@ OPT ?= -g2        # (B) Debug mode, w/ full line-level debugging symbols
 #-----------------------------------------------
 # !!! Do not change the following lines !!!
 #-----------------------------------------------
-
+# 添加编译依赖项
 include ../depends.mk
 include depends.mk
 
@@ -112,6 +112,7 @@ test_web_service: test_web_service.o libgtest.a
 %.o: %.cc $(PROTO_OBJ)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# 编译生成libgtest的静态库
 libgtest.a:
 	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -pthread -c $(GTEST_DIR)/src/gtest-all.cc
 	ar -rv libgtest.a gtest-all.o

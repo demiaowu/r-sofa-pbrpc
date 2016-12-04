@@ -18,7 +18,10 @@ RpcChannel::RpcChannel(RpcClient* rpc_client,
         const RpcChannelOptions& options)
     : _impl(new SimpleRpcChannelImpl(rpc_client->impl(), server_address, options))
 {
-    _impl->Init();
+	// *************************************************************************************
+	// 注意这里的_impl是 new SimpleRpcChannelImpl(rpc_client->impl(), server_address, options)
+	// *************************************************************************************
+	_impl->Init();
 }
 
 RpcChannel::RpcChannel(RpcClient* rpc_client,
@@ -29,6 +32,7 @@ RpcChannel::RpcChannel(RpcClient* rpc_client,
     std::ostringstream os;
     os << server_ip << ":" << server_port;
     _impl.reset(new SimpleRpcChannelImpl(rpc_client->impl(), os.str(), options));
+	// // 同上
     _impl->Init();
 }
 
@@ -36,7 +40,7 @@ RpcChannel::RpcChannel(RpcClient* rpc_client,
         const std::vector<std::string>& address_list,
         const RpcChannelOptions& options)
     : _impl(new DynamicRpcChannelImpl(rpc_client->impl(), address_list, options))
-{
+{	// 同上
     _impl->Init();
 }
 

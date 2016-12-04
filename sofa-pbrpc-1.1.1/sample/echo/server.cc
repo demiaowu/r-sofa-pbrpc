@@ -58,6 +58,7 @@ private:
     }
 };
 
+// 线程初始化回调函数
 bool thread_init_func()
 {
     sleep(1);
@@ -65,6 +66,7 @@ bool thread_init_func()
     return true;
 }
 
+// 线程销毁回调函数
 void thread_dest_func()
 {
     SLOG(INFO, "Destroy work thread succeed");

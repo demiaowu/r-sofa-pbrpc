@@ -16,6 +16,7 @@ int main()
 
     // Define an rpc channel.
     sofa::pbrpc::RpcChannelOptions channel_options;
+	// 注意不同的RpcChannel创建的RpcChannelImpl实现也不一样，也就是创建RpcChannelImpl的子类不一样
     sofa::pbrpc::RpcChannel rpc_channel(&g_rpc_client, "127.0.0.1:12321", channel_options);
 
     // Prepare parameters.
@@ -29,8 +30,9 @@ int main()
 
     // Sync call.
     sofa::pbrpc::test::EchoServer_Stub* stub =
-        new sofa::pbrpc::test::EchoServer_Stub(&rpc_channel);
-    stub->Echo(cntl, request, response, NULL);
+        new sofa::pbrpc::test::EchoServer_Stub(&rpc_channel);	// 存根绑定通道
+	// 客户端存根调用RPC请求实际上是RpcChannel调用CallMethod
+	stub->Echo(cntl, request, response, NULL);					// 
 
     // Check if the request has been sent.
     // If has been sent, then can get the sent bytes.

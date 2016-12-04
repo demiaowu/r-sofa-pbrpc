@@ -1,12 +1,14 @@
 #!/bin/bash
 
+# 运行上面的单元测试，并以此检查结果
+
 function run()
 {
     echo "===========" $1 "==========="
     ./$1
     if [ $? -ne 0 ]; then
         echo "TEST FAILED!!!"
-        exit 1
+        exit 1	# 
     fi
 }
 

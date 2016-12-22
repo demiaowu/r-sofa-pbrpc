@@ -72,7 +72,7 @@ void SimpleRpcChannelImpl::Stop()
     SLOG(INFO, "Stop(): simple rpc channel stopped: %s", _server_address.c_str());
 #endif
 }
-
+// 它实际上调用用_client_impl->CallMethod来实现客户端对数据和网络部分的处理
 void SimpleRpcChannelImpl::CallMethod(const ::google::protobuf::MethodDescriptor* method,
                                       ::google::protobuf::RpcController* controller,
                                       const ::google::protobuf::Message* request,

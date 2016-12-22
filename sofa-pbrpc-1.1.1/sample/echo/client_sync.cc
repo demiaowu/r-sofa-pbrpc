@@ -16,7 +16,8 @@ int main()
 
     // Define an rpc channel.
     sofa::pbrpc::RpcChannelOptions channel_options;
-	// 注意不同的RpcChannel创建的RpcChannelImpl实现也不一样，也就是创建RpcChannelImpl的子类不一样
+	// 注意不同的RpcChannel创建的RpcChannelImpl实现也不一样，也就是创建RpcChannelImpl的子类不一样,
+	// 例如SimpleRpcChannelImpl,当然还有其他的实现
     sofa::pbrpc::RpcChannel rpc_channel(&g_rpc_client, "127.0.0.1:12321", channel_options);
 
     // Prepare parameters.

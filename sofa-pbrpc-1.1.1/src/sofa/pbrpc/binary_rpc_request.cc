@@ -134,34 +134,36 @@ ReadBufferPtr BinaryRpcRequest::AssembleSucceedResponse(
         const google::protobuf::Message* response,
         std::string& err)
 {
-    RpcMeta meta;
+    RpcMeta meta;	// 元数据信息，是protobuf消息
     meta.set_type(RpcMeta::RESPONSE);
     meta.set_sequence_id(cntl->SequenceId());
     meta.set_failed(false);
     meta.set_compress_type(cntl->ResponseCompressType());
 
-    RpcMessageHeader header;
+    RpcMessageHeader header;	//固定头
     int header_size = static_cast<int>(sizeof(header));
     WriteBuffer write_buffer;
-    int64 header_pos = write_buffer.Reserve(header_size);
+    int64 header_pos = write_buffer.Reserve(header_size);	//在buffer中预留固定头
     if (header_pos < 0)
     {
         err = "reserve rpc message header failed";
         return ReadBufferPtr();
     }
-    if (!meta.SerializeToZeroCopyStream(&write_buffer))
+    if (!meta.SerializeToZeroCopyStream(&write_buffer))		//将meta data序列化到buffer中
     {
         err = "serialize rpc meta failed";
         return ReadBufferPtr();
     }
+	// 计算meta data数据长度
     header.meta_size = static_cast<int>(write_buffer.ByteCount() - header_pos - header_size);
     bool ser_ret = false;
     if (meta.compress_type() == CompressTypeNone)
     {
-        ser_ret = response->SerializeToZeroCopyStream(&write_buffer);
+        ser_ret = response->SerializeToZeroCopyStream(&write_buffer);	// reponse data写入的buffer中
     }
     else
     {
+		// 需要压缩reponse data
         sofa::pbrpc::scoped_ptr<AbstractCompressedOutputStream> os(
                 get_compressed_output_stream(&write_buffer, meta.compress_type()));
         ser_ret = response->SerializeToZeroCopyStream(os.get());
@@ -172,6 +174,7 @@ ReadBufferPtr BinaryRpcRequest::AssembleSucceedResponse(
         err = "serialize response message failed";
         return ReadBufferPtr();
     }
+	// 将开始预留给固定头的数据填上
     header.data_size = write_buffer.ByteCount() - header_pos - header_size - header.meta_size;
     header.message_size = header.meta_size + header.data_size;
     write_buffer.SetData(header_pos, reinterpret_cast<const char*>(&header), header_size);

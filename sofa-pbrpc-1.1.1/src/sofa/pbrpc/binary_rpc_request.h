@@ -34,7 +34,7 @@ public:
     virtual void ProcessRequest(
             const RpcServerStreamWPtr& server_stream,
             const ServicePoolPtr& service_pool);
-
+	// 装配Rpc协议response消息
     virtual ReadBufferPtr AssembleSucceedResponse(
             const RpcControllerImplPtr& cntl,
             const google::protobuf::Message* response,

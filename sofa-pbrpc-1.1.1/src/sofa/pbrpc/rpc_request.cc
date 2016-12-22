@@ -63,7 +63,7 @@ void RpcRequest::CallMethod(
     }
 
     google::protobuf::Closure* done = NewClosure(
-            shared_from_this(), &RpcRequest::OnCallMethodDone,
+            shared_from_this(), &RpcRequest::OnCallMethodDone,	//调用OnCallMethodDone
             method_board, controller, request, response);
     cntl->SetStartProcessTime(time_now);
     stream->increase_pending_process_count();
@@ -71,7 +71,7 @@ void RpcRequest::CallMethod(
     method_board->GetServiceBoard()->Service()->CallMethod(
             method_board->Descriptor(), controller, request, response, done);
 }
-
+// 执行reponse发送
 void RpcRequest::OnCallMethodDone(
         MethodBoard* method_board,
         RpcController* controller,
@@ -153,6 +153,7 @@ void RpcRequest::OnCallMethodDone(
                 RpcEndpointToString(_remote_endpoint).c_str(), cntl->SequenceId(),
                 cntl->MethodId().c_str());
 #endif
+        // 发送数据
         SendSucceedResponse(cntl, response);
     }
 
@@ -166,6 +167,7 @@ void RpcRequest::SendSucceedResponse(
         const google::protobuf::Message* response)
 {
     std::string err;
+    // 在发送之前将response装配成一个buffer，便于后面的处理
     ReadBufferPtr read_buffer = AssembleSucceedResponse(cntl, response, err);
     if (!read_buffer)
     {

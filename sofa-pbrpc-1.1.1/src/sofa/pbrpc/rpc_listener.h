@@ -70,6 +70,7 @@ public:
     }
 
     // Set the callback funtion when created a new connection.
+    // create回调为：RpcServerImpl::OnCreated
     template <typename T>
     void set_create_callback(const T& create_callback)
     {
@@ -77,6 +78,7 @@ public:
     }
 
     // Set the callback funtion when accepted a new connection.
+    // accpet回调为 RpcServerImpl::OnAccepted
     template <typename T>
     void set_accept_callback(const T& accept_callback)
     {
@@ -175,8 +177,10 @@ public:
     }
 
 private:
+    // 接收Client的链接
     void async_accept()
     {
+        // IOService是Asio中io_service
         RpcServerStreamPtr stream(new RpcServerStream(_io_service_pool->GetIOService()));
 
         if (_create_callback)
@@ -185,7 +189,7 @@ private:
         _acceptor.async_accept(stream->socket(), boost::bind(
                     &RpcListener::on_accept, shared_from_this(), stream, _1));
     }
-
+    // 执行链接accept
     void on_accept(const RpcServerStreamPtr& stream,
             const boost::system::error_code& ec)
     {

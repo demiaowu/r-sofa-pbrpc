@@ -85,13 +85,15 @@ int main()
     sofa::pbrpc::Servlet servlet = sofa::pbrpc::NewPermanentExtClosure(&WebServlet);
     rpc_server.RegisterWebServlet("/hello", servlet);
 
-    // Start rpc server.
+    // Start rpc server. 调用的是RpcServerImpl::start()
+	// 注意RpcServer.Start内部完成的工作
     if (!rpc_server.Start("0.0.0.0:12321")) {
         SLOG(ERROR, "start server failed");
         return EXIT_FAILURE;
     }
     
     // Register service.
+	// 注册服务，注意这里echo_service是用户继承EchoServer实现的EchoServerImpl::echo()
     sofa::pbrpc::test::EchoServer* echo_service = new EchoServerImpl();
     if (!rpc_server.RegisterService(echo_service)) {
         SLOG(ERROR, "export service failed");
@@ -99,9 +101,11 @@ int main()
     }
 
     // Wait signal.
+	// 等待服务端退出的信号
     rpc_server.Run();
 
     // Stop rpc server.
+	// 处理rpc server退出的收尾工作
     rpc_server.Stop();
 
     // Delete closures.

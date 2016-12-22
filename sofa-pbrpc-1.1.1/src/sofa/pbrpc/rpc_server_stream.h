@@ -90,6 +90,7 @@ public:
     // If send done, on mater succeed or failed, SendResponseCallback will be called.
     // @param message  the response message to send, including the header.  not null.
     // @param callback  the callback function when send succeed or failed.  NULL means no callback.
+	// 执行RpcServerStream::async_send_message()实现异步消息发送
     void send_response(
             const ReadBufferPtr& message, 
             const SendResponseCallback& callback)
@@ -138,14 +139,15 @@ private:
 
         if (callback) callback(error_code);
     }
-
+	// 执行Rpc协议消息接收
     virtual void on_received(
             const RpcRequestPtr& request)
     {
         SOFA_PBRPC_FUNCTION_TRACE;
 
         if (_received_request_callback)
-        {
+        {	// 执行_received_request_callback回调函数完成消息接收，
+			// 实际上调用的是RpcServerImpl::OnAccepted
             _received_request_callback(
                     sofa::pbrpc::dynamic_pointer_cast<RpcServerStream>(shared_from_this()),
                     request);

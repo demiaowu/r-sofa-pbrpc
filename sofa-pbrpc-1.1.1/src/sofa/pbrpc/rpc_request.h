@@ -62,22 +62,28 @@ public:
             std::string& err) = 0;
 
 public:
+    // //调用RpcRequest::OnCallMethodDone,在OnCallMethodDone执行SendSucceedResponse
+    // 完成reponse的发送
     void CallMethod(
             MethodBoard* method_board,
             RpcController* controller,
             google::protobuf::Message* request,
             google::protobuf::Message* response);
-
+    // 执行RpcRequest::SendSucceedResponse 完成reponse的发送
     void OnCallMethodDone(
             MethodBoard* method_board,
             RpcController* controller,
             google::protobuf::Message* request,
             google::protobuf::Message* response);
-
+    // 调用RpcRequest::SendSucceedResponse(
+    //        const RpcControllerImplPtr& cntl,
+    //        const google::protobuf::Message* response);
     void SendSucceedResponse(
             const RpcControllerImplPtr& cntl,
             const google::protobuf::Message* response);
 
+
+    // 调用RpcServerStream::send_response
     void SendSucceedResponse(
             const RpcServerStreamWPtr& stream,
             const ReadBufferPtr& buffer);

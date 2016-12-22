@@ -130,8 +130,10 @@ bool RpcServerImpl::Start(const std::string& server_address)
     }
 
     _listener.reset(new RpcListener(_io_service_pool, _listen_endpoint));
+	// 设置Linstener的create回调
     _listener->set_create_callback(boost::bind(
                 &RpcServerImpl::OnCreated, shared_from_this(), _1));
+	// 设置Linstener的接收回调
     _listener->set_accept_callback(boost::bind(
                 &RpcServerImpl::OnAccepted, shared_from_this(), _1));
     _listener->set_accept_fail_callback(boost::bind(
@@ -422,7 +424,7 @@ void RpcServerImpl::OnAcceptFailed(RpcErrorCode error_code, const std::string& e
         _event_handler->NotifyAcceptFailed(error_code, error_text);
     }
 }
-
+// 完成消息处理
 void RpcServerImpl::OnReceived(const RpcServerStreamWPtr& stream, const RpcRequestPtr& request)
 {
     if (!_is_running)

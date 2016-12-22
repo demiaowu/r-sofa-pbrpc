@@ -41,6 +41,8 @@ void BinaryRpcRequest::ProcessRequest(
 {
     std::string service_name;
     std::string method_name;
+	// 解析消息，获取服务名和方法名，再通过服务名和方法名再服务池中获取回调方法
+	// ——也就是RpcRequest的MethodBorad
     if (!ParseMethodFullName(_req_meta.method(), &service_name, &method_name))
     {
 #if defined( LOG )
@@ -56,7 +58,7 @@ void BinaryRpcRequest::ProcessRequest(
                 RPC_ERROR_PARSE_METHOD_NAME, "method full name: " + _req_meta.method());
         return;
     }
-
+	// 从服务池中获得回调函数,是RpcRequest的MethodBoard
     MethodBoard* method_board = FindMethodBoard(service_pool, service_name, method_name);
     if (method_board == NULL)
     {
@@ -73,7 +75,7 @@ void BinaryRpcRequest::ProcessRequest(
                 RPC_ERROR_FOUND_METHOD, "method full name: " + _req_meta.method());
         return;
     }
-
+	// 通过Protobuf提供的接口，获取服务和消息
     google::protobuf::Service* service = method_board->GetServiceBoard()->Service();
     const google::protobuf::MethodDescriptor* method_desc = method_board->Descriptor();
 
@@ -105,7 +107,8 @@ void BinaryRpcRequest::ProcessRequest(
         delete request;
         return;
     }
-
+	// 创建一个reponse消息，猜测服务端的reponse消息在service->GetResponsePrototype(method_desc).New()
+	// 构建的时候，就调用了EchoServerImpl中的echo方法（echo完成了response的组装），
     google::protobuf::Message* response = service->GetResponsePrototype(method_desc).New();
 
     RpcController* controller = new RpcController();
@@ -122,7 +125,7 @@ void BinaryRpcRequest::ProcessRequest(
     cntl->SetRequestReceivedTime(_received_time);
     cntl->SetResponseCompressType(_req_meta.has_expected_response_compress_type() ?
             _req_meta.expected_response_compress_type() : CompressTypeNone);
-
+	// 执行RpcRequest的method_board，因为RpcReqest是BinaryRpcRequest的父类
     CallMethod(method_board, controller, request, response);
 }
 

@@ -65,6 +65,7 @@ public:
     Servlet UnregisterWebServlet(const std::string& path);
 
 private:
+	// 设置数据接收回调函数为RpcServerImpl::OnReceived
     void OnCreated(const RpcServerStreamPtr& stream);
 
     void OnAccepted(const RpcServerStreamPtr& stream);

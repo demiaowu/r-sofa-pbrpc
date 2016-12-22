@@ -12,7 +12,7 @@
 namespace sofa {
 namespace pbrpc {
 class ConditionVariable;
-
+// 互斥锁
 class MutexLock
 {
 public:
@@ -33,8 +33,8 @@ public:
         pthread_mutex_unlock(&_lock);
     }
 private:
-    friend class ConditionVariable;
-    pthread_mutex_t _lock;
+    friend class ConditionVariable;	//条件变量
+    pthread_mutex_t _lock;	//Linux系统互斥锁
 };
 
 } // namespace pbrpc

@@ -11,7 +11,7 @@
 
 namespace sofa {
 namespace pbrpc {
-
+// 读写锁
 class RWLock
 {
 public:
@@ -23,11 +23,13 @@ public:
     {
         pthread_rwlock_destroy(&_lock);
     }
+    // 互斥写锁
     void lock()
     {
         pthread_rwlock_wrlock(&_lock);
     }
-    void lock_shared()
+    // //读锁,共享读锁
+    void lock_shared()	
     {
         pthread_rwlock_rdlock(&_lock);
     }
@@ -38,7 +40,7 @@ public:
 private:
     pthread_rwlock_t _lock;
 };
-
+// 读锁，注意和写锁的区别
 class ReadLocker
 {
 public:

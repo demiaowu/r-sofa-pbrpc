@@ -12,7 +12,7 @@
 
 namespace sofa {
 namespace pbrpc {
-
+// 通过预编译决定sofa-pbrpc使用自旋锁还是互斥锁
 #if defined( SOFA_PBRPC_USE_SPINLOCK )
     typedef SpinLock FastLock;
 #else

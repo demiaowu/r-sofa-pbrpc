@@ -11,6 +11,7 @@ namespace sofa {
 namespace pbrpc {
 
 template <typename LockType>
+// lock guard
 class ScopedLocker
 {
 public:

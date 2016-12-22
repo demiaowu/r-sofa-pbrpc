@@ -12,7 +12,7 @@
 
 namespace sofa {
 namespace pbrpc {
-
+// 自旋锁
 class SpinLock
 {
 public:
@@ -30,12 +30,12 @@ private:
 }
 
 #else
-
+// Linux系统下
 #include <pthread.h>
 
 namespace sofa {
 namespace pbrpc {
-
+// 自旋锁
 class SpinLock
 {
 public:

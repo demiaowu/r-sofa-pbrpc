@@ -15,23 +15,27 @@
 
 namespace sofa {
 namespace pbrpc {
-
+// 原子增
 template <typename T>
-inline void atomic_inc(volatile T* n)
+inline void atomic_inc(volatile T* n)	
 {
+	// gcc内嵌汇编
     asm volatile ("lock; incl %0;":"+m"(*n)::"cc");
 }
+// 原子减
 template <typename T>
 inline void atomic_dec(volatile T* n)
 {
     asm volatile ("lock; decl %0;":"+m"(*n)::"cc");
 }
+// n原子加v，并返回旧值
 template <typename T>
 inline T atomic_add_ret_old(volatile T* n, T v)
 {
     asm volatile ("lock; xaddl %1, %0;":"+m"(*n),"+r"(v)::"cc");
     return v;
 }
+// 原子减，并返回旧值
 template <typename T>
 inline T atomic_inc_ret_old(volatile T* n)
 {
@@ -39,6 +43,7 @@ inline T atomic_inc_ret_old(volatile T* n)
     asm volatile ("lock; xaddl %1, %0;":"+m"(*n), "+r"(r)::"cc");
     return r;
 }
+// 原子减，并返回旧值
 template <typename T>
 inline T atomic_dec_ret_old(volatile T* n)
 {
@@ -46,6 +51,7 @@ inline T atomic_dec_ret_old(volatile T* n)
     asm volatile ("lock; xaddl %1, %0;":"+m"(*n), "+r"(r)::"cc");
     return r;
 }
+// 8个字节的类型
 template <typename T>
 inline T atomic_add_ret_old64(volatile T* n, T v)
 {
@@ -66,11 +72,13 @@ inline T atomic_dec_ret_old64(volatile T* n)
     asm volatile ("lock; xaddq %1, %0;":"+m"(*n), "+r"(r)::"cc");
     return r;
 }
+// n原子加上v
 template <typename T>
 inline void atomic_add(volatile T* n, T v)
 {
     asm volatile ("lock; addl %1, %0;":"+m"(*n):"r"(v):"cc");
 }
+// 
 template <typename T>
 inline void atomic_sub(volatile T* n, T v)
 {

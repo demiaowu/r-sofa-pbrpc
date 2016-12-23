@@ -28,6 +28,9 @@ typedef std::deque<BufHandle> BufHandleList;
 typedef std::deque<BufHandle>::iterator BufHandleListIterator;
 typedef std::deque<BufHandle>::reverse_iterator BufHandleListReverseIterator;
 
+//	这里面将ReadBuffer和WriteBuffer分别继承ZeroCopyInputStream和ZeroCopyOutputStream
+// 	是为了让google protobuf的接口也可以操作这两个buffer，如将message序列化到buffer中，
+
 class ReadBuffer : public google::protobuf::io::ZeroCopyInputStream
 {
 public:
@@ -45,12 +48,15 @@ public:
     void Append(const ReadBuffer* read_buffer);
 
     // Get the total byte count of the buffer.
+    // 总的字节数
     int64 TotalCount() const;
 
     // Get the block count occupied by the buffer.
+	// 被占用块计数
     int BlockCount() const;
 
     // Get the total block size occupied by the buffer.
+    // 总的占用字节数
     int64 TotalBlockSize() const;
 
     // Trans buffer to string.
@@ -84,6 +90,7 @@ public:
     int64 TotalCapacity() const;
 
     // Get the block count occupied by the buffer.
+	// 块计数
     int BlockCount() const;
 
     // Get the total block size occupied by the buffer.
@@ -114,7 +121,9 @@ public:
 
     // implements ZeroCopyOutputStream ---------------------------------
     bool Next(void** data, int* size);
+	// 回退count个字节
     void BackUp(int count);
+	// 写入字节总数
     int64 ByteCount() const;
 
     // Append string to the buffer
@@ -125,14 +134,17 @@ public:
 
 private:
     // Add a new block to the end of the buffer.
+	// 给写buffer增加一个block
     bool Extend();
 
 private:
-    BufHandleList _buf_list;
-    int64 _total_block_size; // total block size in the buffer
-    int64 _total_capacity; // total capacity in the buffer
-    int _last_bytes; // last write bytes
-    int64 _write_bytes; // total write bytes
+	// 对buffer来说，都是通过管理block句柄来管理数据block
+    BufHandleList _buf_list;									// block句柄列表
+    int64 _total_block_size; // total block size in the buffer	// block size包含隐藏头 
+    int64 _total_capacity; // total capacity in the buffer		// 容量不包含隐藏头
+	// // 最后一次写入到最后一个block的字节数, 
+    int _last_bytes; // last write bytes						
+    int64 _write_bytes; // total write bytes					// 总的写入字节
 
     SOFA_PBRPC_DISALLOW_EVIL_CONSTRUCTORS(WriteBuffer);
 }; // class WriteBuffer

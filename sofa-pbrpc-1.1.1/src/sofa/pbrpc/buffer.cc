@@ -205,13 +205,13 @@ int64 WriteBuffer::Reserve(int count)
         if (!Next(&data, &size))
             return -1;
         if (size > count)
-        {
+        {	// 如果返回的数据块大于需要的count，那么回退size-count个字节
             BackUp(size - count);
             count = 0;
         }
         else
-        {
-            count -= size;
+        {	// 如果小于，那么说明一个block放不下，还需要分配一个新的block
+            count -= size;	
         }
     }
     return head;
@@ -262,21 +262,31 @@ void WriteBuffer::SetData(int64 pos, const char* data, int size)
 
 bool WriteBuffer::Next(void** data, int* size)
 {
+	// 反向迭代器
     BufHandleListReverseIterator last = _buf_list.rbegin();
     if (last == _buf_list.rend() || last->size == last->capacity)
-    {
-        if (!Extend())
+    {	// 给buffer增加一个block的情况：
+		//		1. last == buf_list.rend()说明，写buffer的block列表为空
+		// 		2. last->size == last->capacity，说明写buffer的最后一个块已经写满了
+        if (!Extend())	// 给buffer加一个block
         {
             _last_bytes = 0;
             return false;
         }
-        last = _buf_list.rbegin();
+        last = _buf_list.rbegin();	// 因为新增了一个block所以之前的last迭代器失效了，需要更新
     }
-    *data = last->data + last->size;
-    *size = last->capacity - last->size;
-    last->size = last->capacity;
+	// 当前可用块只有一种情况
+	// 		1. 上面新分配的数据块
+	// 		2. 写buffer最后剩下的数据块还有可用空间，
+	// 这样表明每一个buffer只有可能会在最后一个block出现一部分浪费，前面的block都是紧凑的填充的
+	// 例如，一个buffer要写入2.3k数据，而且假设每个block的大小为1K，那么会占用三个block，第1,2个
+	// block将被占满，第3个block将占用0.3K,会出现0.7K的浪费
+	
+    *data = last->data + last->size;		// 当前可用块的剩余可写位置的指针
+    *size = last->capacity - last->size;	// 当前可用块的剩余容量
+    last->size = last->capacity;	// last->size 并不总是等于 last->capacity，在Backup中会更新
     _last_bytes = *size;
-    _write_bytes += _last_bytes;
+    _write_bytes += _last_bytes;	// 实际使用多少会在BackUp中根据实际使用情况更新
     return true;
 }
 
@@ -287,9 +297,9 @@ void WriteBuffer::BackUp(int count)
     SCHECK_GT(_last_bytes, 0);
     SCHECK_GE(count, 0);
     SCHECK_LE(count, _last_bytes);
-    _buf_list.back().size -= count;
-    _last_bytes = 0;
-    _write_bytes -= count;
+	_buf_list.back().size -= count;	
+    _last_bytes = 0;	
+    _write_bytes -= count;	
 }
 
 int64 WriteBuffer::ByteCount() const
@@ -300,10 +310,12 @@ int64 WriteBuffer::ByteCount() const
 bool WriteBuffer::Extend()
 {
     // incrementally extend block
-    char* block = static_cast<char*>(TranBufPool::malloc(std::min(
-                    SOFA_PBRPC_TRAN_BUF_BLOCK_MAX_FACTOR,
-                    (int)_buf_list.size())));
+	// 分配一个数据块
+    char* block = static_cast<char*>(TranBufPool::malloc(
+		std::min( SOFA_PBRPC_TRAN_BUF_BLOCK_MAX_FACTOR/* 5 */, (int)_buf_list.size() )
+				));
     if (block == NULL) return false;
+	// 将block插入到写buffer中
     _buf_list.push_back(BufHandle(block, TranBufPool::capacity(block)));
     _total_block_size += TranBufPool::block_size(block);
     _total_capacity += TranBufPool::capacity(block);

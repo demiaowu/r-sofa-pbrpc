@@ -9,14 +9,15 @@
 
 namespace sofa {
 namespace pbrpc {
-
+// buffer的块句柄
 struct BufHandle
 {
-    char* data; // block header
-    int   size; // data size
+    char* data; // block header	块数据指针——在句柄只包含了数据指针
+    int   size; // data size	block中可读/可写数据的大小
+	// 同一个东西，在不同的地方所代表的含义不一样，可以使用union实现不同地方使用不同的名称
     union {
-        int capacity; // block capacity, used by WriteBuffer
-        int offset;   // start position in the block, used by ReadBuffer
+        int capacity; // block capacity, used by WriteBuffer块的容量——用于写buffer，表明这个块有多少空间可写
+        int offset;   // start position in the block, used by ReadBuffer	块的开始偏移，用于读buffer
     };
 
     BufHandle(char* _data, int _capacity)

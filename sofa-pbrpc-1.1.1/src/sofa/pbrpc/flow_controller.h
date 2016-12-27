@@ -121,10 +121,10 @@ public:
     }
 
 private:
-    bool _read_no_limit;
-    volatile int _read_quota;
-    bool _write_no_limit;
-    volatile int _write_quota;
+    bool _read_no_limit;		// 读带宽不受限标志
+    volatile int _read_quota;	// 读配额
+    bool _write_no_limit;		// 写带宽不受限标志
+    volatile int _write_quota;	// 写配额
 
     SOFA_PBRPC_DISALLOW_EVIL_CONSTRUCTORS(FlowController);
 }; // class FlowController

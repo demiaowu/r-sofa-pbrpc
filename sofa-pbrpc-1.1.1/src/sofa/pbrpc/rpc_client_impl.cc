@@ -24,8 +24,10 @@ RpcClientImpl::RpcClientImpl(const RpcClientOptions& options)
     , _last_maintain_ticks(0)
     , _last_print_connection_ticks(0)
 {
+	// 
     _slice_count = std::max(1, 1000 / MAINTAIN_INTERVAL_IN_MS);
-    _slice_quota_in = _options.max_throughput_in == -1 ?
+	// // 每个时间片接收的数据配额量 = 带宽限制/分片总数
+    _slice_quota_in = _options.max_throughput_in == -1 ?	
         -1 : std::max(0L, _options.max_throughput_in * 1024L * 1024L) / _slice_count;
     _slice_quota_out = _options.max_throughput_out == -1 ?
         -1 : std::max(0L, _options.max_throughput_out * 1024L * 1024L) / _slice_count;
@@ -145,6 +147,7 @@ void RpcClientImpl::ResetOptions(const RpcClientOptions& options)
     _options.max_pending_buffer_size = options.max_pending_buffer_size;
     _options.keep_alive_time = options.keep_alive_time;
 
+	// 分片配额——注意max_throughput_in是M/s
     _slice_quota_in = _options.max_throughput_in == -1 ?
         -1 : std::max(0L, _options.max_throughput_in * 1024L * 1024L) / _slice_count;
     _slice_quota_out = _options.max_throughput_out == -1 ?
@@ -535,7 +538,7 @@ void RpcClientImpl::TimerMaintain(const PTime& now)
             for (std::vector<FlowControlItem>::iterator t_it = trigger_list.begin();
                     t_it != trigger_list.end(); ++t_it)
             {
-                t_it->stream->trigger_receive();
+                t_it->stream->trigger_receive();	// 触发接收，其调用的是 try_start_receive()
             }
         }
 

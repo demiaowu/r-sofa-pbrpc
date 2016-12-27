@@ -24,7 +24,7 @@ namespace pbrpc {
 class RpcClientImpl: public sofa::pbrpc::enable_shared_from_this<RpcClientImpl>
 {
 public:
-    static const int MAINTAIN_INTERVAL_IN_MS = 100;
+    static const int MAINTAIN_INTERVAL_IN_MS = 100;	//时间分片大小为100毫秒
 
 public:
     explicit RpcClientImpl(const RpcClientOptions& options);
@@ -101,9 +101,9 @@ private:
     int64 _last_maintain_ticks;
     int64 _last_print_connection_ticks;
 
-    int64 _slice_count;
-    int64 _slice_quota_in;
-    int64 _slice_quota_out;
+    int64 _slice_count;			// _slice_count = std::max(1, 1000 / MAINTAIN_INTERVAL_IN_MS)=10;
+    int64 _slice_quota_in;		// 接收数据配额量
+    int64 _slice_quota_out;		// 发送数据配额量
     int64 _max_pending_buffer_size;
     int64 _keep_alive_ticks;
     int64 _print_connection_interval_ticks;

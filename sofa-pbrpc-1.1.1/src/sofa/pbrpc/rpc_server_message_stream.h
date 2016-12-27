@@ -527,7 +527,7 @@ private:
                 else if ((_write_quota_token = _flow_controller->acquire_write_quota(
                                 _sending_message->TotalCount())) <= 0)
                 {
-                    // no network quota
+                    // no network quota 没有带宽配额，加入待决队列中
                     insert_into_pending_queue(_sending_message, _sending_cookie);
                     clear_sending_env();
 
@@ -535,7 +535,7 @@ private:
                     break;
                 }
                 else
-                {
+                {	// 有带宽配额，则直接发送
                     // now send
                     _sent_size = 0;
                     bool ret = _sending_message->Next(

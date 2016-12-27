@@ -322,7 +322,7 @@ public:
 
     ServiceBoard* FindService(const std::string& svc_name)
     {
-        // find in cache first
+        // find in cache first 现在缓存中找	
         uint64 cache_index = CacheIndex(svc_name);
         if (_cache[cache_index] != NULL
                 && _cache[cache_index]->ServiceName() == svc_name) {
@@ -427,7 +427,7 @@ private:
 
     ServiceBoard* _head;
     int _count;
-    ServiceBoard* _cache[SERVICE_CACHE_SLOT_COUNT];
+    ServiceBoard* _cache[SERVICE_CACHE_SLOT_COUNT];	
 
     SOFA_PBRPC_DISALLOW_EVIL_CONSTRUCTORS(ServicePool);
 }; // class ServicePool

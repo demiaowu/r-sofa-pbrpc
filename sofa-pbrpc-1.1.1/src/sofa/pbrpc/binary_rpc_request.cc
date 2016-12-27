@@ -1,4 +1,5 @@
 // Copyright (c) 2014 Baidu.com, Inc. All rights reserved.
+    printf("FindMethodBoard(service_pool=0x%X, service_name=0x%X, method_name=0x%X)\n", &service_pool, &service_name, &method_name);
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //

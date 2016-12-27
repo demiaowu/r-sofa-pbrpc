@@ -38,6 +38,7 @@ void HTTPRpcRequestParser::Reset()
 
 bool HTTPRpcRequestParser::CheckMagicString(const char* magic_string)
 {
+	// request头的前面四个字节的魔术字符串，如果是GET 或者POST，那么说明是Http类型的request
     SCHECK(_state == PS_METHOD);
     if (memcmp(magic_string, "GET ", 4) == 0)
     {

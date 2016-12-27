@@ -601,9 +601,9 @@ private:
             int consumed;
             if (_magic_string_recved_bytes < 4)
             {
-                // read magic string
+                // read magic string 读取魔术字符串
                 consumed = std::min(size, 4 - _magic_string_recved_bytes);
-                memcpy(_magic_string + _magic_string_recved_bytes, data, consumed);
+                memcpy(_magic_string + _magic_string_recved_bytes, data, consumed);	// 复制魔术字符串
                 _magic_string_recved_bytes += consumed;
                 _cur_recved_bytes += consumed;
                 if (_magic_string_recved_bytes < 4)
@@ -612,6 +612,7 @@ private:
                 }
                 data += consumed;
                 size -= consumed;
+                // 根据request前面的魔术字符串，设置_current_rpc_request_parser，用于接续request
                 if (!choose_rpc_request_parser())
                 {
                     // no parser identify the magic string
@@ -623,6 +624,7 @@ private:
                     return true;
                 }
             }
+            // 使用相应的解析器，解析用户的request
             int ret = _current_rpc_request_parser->Parse(
                     _tran_buf, size, data - _tran_buf, &consumed);
             _cur_recved_bytes += consumed;
@@ -636,11 +638,12 @@ private:
             }
             data += consumed;
             size -= consumed;
+            // 获取解析完的用户请求——用户请求的种类也包含BinaryRpcRequest和HttpRpcRequest
             RpcRequestPtr request = _current_rpc_request_parser->GetRequest();
             request->SetLocalEndpoint(_local_endpoint);
             request->SetRemoteEndpoint(_remote_endpoint);
             request->SetReceivedTime(ptime_now());
-            received_messages->push_back(request);
+            received_messages->push_back(request);  // 将用户请求加入到接收的消息队列中
             reset_receiving_env();
         }
         return true;
@@ -649,16 +652,19 @@ private:
     // Choose the proper request parser.
     //
     // @return false if no parser matched.
+	// 根据魔术字符串选择Rpc_request——parser对request进行解析，其中解析器有Binary和Http两种
     bool choose_rpc_request_parser()
     {
         // usually, one channal always use the same parser,
         // so first try to use the parser used by the last request
+		// 首先用之前的解析器尝试，如果和上次最后一次使用的解析器相同，则直接返回
         if (_current_rpc_request_parser
                 && _current_rpc_request_parser->CheckMagicString(_magic_string))
         {
             return true;
         }
         // the last parser not match, then find in all parsers
+		// 否则，在遍历所有的解析器vector判断——在sofa-pbrpc中有http和binary两种解析器
         std::vector<RpcRequestParserPtr>::const_iterator it = _rpc_request_parsers.begin();
         std::vector<RpcRequestParserPtr>::const_iterator end = _rpc_request_parsers.end();
         for (; it != end; ++it)

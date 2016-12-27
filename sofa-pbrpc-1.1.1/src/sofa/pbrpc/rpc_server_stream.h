@@ -147,7 +147,7 @@ private:
 
         if (_received_request_callback)
         {	// 执行_received_request_callback回调函数完成消息接收，
-			// 实际上调用的是RpcServerImpl::OnAccepted
+			// 实际上调用的是RpcServerImpl::OnReceived
             _received_request_callback(
                     sofa::pbrpc::dynamic_pointer_cast<RpcServerStream>(shared_from_this()),
                     request);

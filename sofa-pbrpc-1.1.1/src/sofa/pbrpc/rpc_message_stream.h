@@ -269,10 +269,10 @@ private:
         // release token
         atomic_comp_swap(&_receive_token, TOKEN_FREE, TOKEN_LOCK);
 
-        // trigger next receive
+        // trigger next receive	触发下一次接收
         try_start_receive();
 
-        // process messages
+        // process messages 处理消息
         while (!is_closed() && !received_messages.empty())
         {
             const ReceivedItem& item = received_messages.front();

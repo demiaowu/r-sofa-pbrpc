@@ -33,7 +33,7 @@ void BinaryRpcRequestParser::Reset()
 }
 
 bool BinaryRpcRequestParser::CheckMagicString(const char* magic_string)
-{
+{	// 如果魔术字符串是“SOFA”，那么就是普通RPC request
     SCHECK(_state == PS_MAGIC_STRING && _bytes_recved == 0);
     if (*reinterpret_cast<const uint32*>(magic_string) == 
             _req->_req_header.magic_str_value)

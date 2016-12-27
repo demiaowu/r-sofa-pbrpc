@@ -29,6 +29,7 @@ const char* compile_info()
 
 namespace internal {
 
+// 默认的日志级别
 static LogLevel s_log_level = ::sofa::pbrpc::LOG_LEVEL_ERROR;
 
 LogLevel get_log_level()
@@ -41,6 +42,7 @@ void set_log_level(LogLevel level)
     s_log_level = level;
 }
 
+// 默认的日志处理器，也就是默认的日志回调函数
 void default_log_handler(
     LogLevel level, const char* filename, int line, const char *fmt, va_list ap)
 {
@@ -71,7 +73,7 @@ void default_log_handler(
             filename, line, buf);
 #endif
     fflush(stderr);
-
+    // 日志级别是FATAL，则退出
     if (level == ::sofa::pbrpc::LOG_LEVEL_FATAL)
     {
         abort();
@@ -83,6 +85,7 @@ void null_log_handler(LogLevel, const char*, int, const char *, va_list)
     // Nothing
 }
 
+// 默认日志句柄
 static LogHandler* s_log_handler = default_log_handler;
 
 void log_handler(LogLevel level, const char* filename, int line, const char *fmt, ...)

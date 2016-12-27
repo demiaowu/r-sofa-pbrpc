@@ -53,7 +53,8 @@ static const uint64 kuint64max = ::google::protobuf::kuint64max;
     void operator=(const TypeName&)
 
 /////////////// logging and check /////////////
-// default log level: ERROR
+// default log level: ERROR 
+// 默认日志级别是ERROR
 enum LogLevel {
     LOG_LEVEL_FATAL   = 0,
     LOG_LEVEL_ERROR   = 1,
@@ -90,7 +91,7 @@ void log_handler(LogLevel level, const char* filename, int line, const char *fmt
 #define SOFA_PBRPC_SET_LOG_LEVEL(level) \
     ::sofa::pbrpc::internal::set_log_level(::sofa::pbrpc::LOG_LEVEL_##level)
 
-#define SLOG(level, fmt, arg...) \
+#define SLOG(level, fmt, arg...) \	//只有当日志级别低于默认级别时，日志才会输出
     (::sofa::pbrpc::LOG_LEVEL_##level > ::sofa::pbrpc::internal::get_log_level()) ? \
             (void)0 : ::sofa::pbrpc::internal::log_handler( \
                     ::sofa::pbrpc::LOG_LEVEL_##level, __FILE__, __LINE__, fmt, ##arg) \

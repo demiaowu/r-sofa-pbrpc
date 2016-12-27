@@ -146,6 +146,7 @@ void DynamicRpcChannelImpl::CallMethod(
     RpcErrorCode choose_ret;
     int retry_count = 0;
     while (true) {
+		// 选择服务端，实现负载均衡
         choose_ret = ChooseServer(server, retry_count + 1);
         if (choose_ret == RPC_SUCCESS){
             if (server->InitChannel(_client_impl, _options)) {
@@ -166,12 +167,14 @@ void DynamicRpcChannelImpl::CallMethod(
             }
         }
         // check retry count
+		// 重试次数
         if (retry_count >= kRetryCount) {
             // retry out
             server.reset();
             break;
         }
         // sleep to retry
+		// 
         usleep(kRetryInterval * 1000);
         ++retry_count;
     }
@@ -390,6 +393,12 @@ RpcErrorCode DynamicRpcChannelImpl::ChooseServer(ServerContextPtr& choosed_serve
     choosed_server.reset();
     ScopedLocker<LockType> _(_map_lock);
 
+	// 负载均衡策略：
+	// 
+	// 		1.对于每个单点channel，记录其“未完成的调用数（Not Done Calling Count）”，数量越少，表示负载越轻；
+	// 		下次选择server的时候，优先选择“未完成的调用数”最少的机器；
+	// 		
+	// 		2.在“未完成的调用数”相同的情况下，优先选择“最近最长时间未使用的机器”。
     // first choose the channel in _live_map with minimal <wait_count,last_request_seq>.
     if (!_live_map.empty()) {
         uint32 min_wait_count = kuint32max;

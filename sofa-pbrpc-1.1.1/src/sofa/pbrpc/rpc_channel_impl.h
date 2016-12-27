@@ -13,7 +13,7 @@
 namespace sofa {
 namespace pbrpc {
 //*********************************************************
-// RpcChannelImpl只是一个抽象类，在RpcChanel构造函数实现的时候，会根据构造函数不同选择
+// RpcChannelImpl只是一个抽象类，在RpcChannel构造函数实现的时候，会根据构造函数不同选择
 // 不同的RpcChannelImpl的子类
 class RpcChannelImpl : public ::google::protobuf::RpcChannel
 {

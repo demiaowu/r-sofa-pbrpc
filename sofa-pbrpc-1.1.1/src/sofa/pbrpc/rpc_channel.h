@@ -53,7 +53,7 @@ public:
         // This method is called when some addresses removed.
         virtual void OnAddressRemoved(const std::vector<std::string>& address_list) = 0;
     };
-
+    // 用户可以提供一个AddressProvider，支持动态增加或者删除server地址
     class AddressProvider {
     public:
         virtual ~AddressProvider() {}

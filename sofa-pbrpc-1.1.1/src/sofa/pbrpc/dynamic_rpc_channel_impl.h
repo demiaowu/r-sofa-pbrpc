@@ -23,19 +23,29 @@
 namespace sofa {
 namespace pbrpc {
 
+//	容错与探活策略：
+//
+// 		每个server内置一个BuiltinService，提供Health()方法用于探活；
+//		在Client端维护两个队列：“活动队列”和“待探活队列”；
+//		RPC调用选择server的时候，优先从“活动队列”中选择；
+//		一旦某个server的RPC调用出错，则将其加入“待探活队列”；
+//		Client周期性地（每隔5秒）向“待探活队列”中的机器发送探活请求，如果探活成功，则重新放回到“活动队列”。
 class DynamicRpcChannelImpl : public RpcChannelImpl,
     public ::sofa::pbrpc::enable_shared_from_this<DynamicRpcChannelImpl>
 {
 public:
     // Detect timeout, 3 second.
+	// 探活超时：3s
     const static int64 kDetectTimeout = 3000; // in ms
 
     // Detect interval, 5 second.
-    const static int64 kDetectInterval = 5000; // in ms
+	// 探活间隔：5s
+    const static int64 kDetectInterval = 5000; // in ms	
 
     // Retry interval and count when choose server.
-    const static int kRetryInterval = 800; // in ms
-    const static int kRetryCount = 3;
+	// 选择服务端时，如果出错，将重试
+    const static int kRetryInterval = 800; 	// in ms	重试间隔
+    const static int kRetryCount = 3;		//			重试次数
 
 private:
     typedef MutexLock LockType;
@@ -130,8 +140,8 @@ private:
     RpcChannelOptions _options;
 
     LockType _map_lock;
-    ServerContextMap _live_map;
-    ServerContextMap _unlive_map;
+    ServerContextMap _live_map;		// 活动队列
+    ServerContextMap _unlive_map;	// 待探活队列
 
     LockType _add_remove_lock;
     std::set<std::string> _added_set;

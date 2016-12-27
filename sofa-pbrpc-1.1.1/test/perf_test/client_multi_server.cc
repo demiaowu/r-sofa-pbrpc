@@ -43,6 +43,9 @@ int main(int argc, char** argv)
 
     // Define an rpc channel.
     sofa::pbrpc::RpcChannelOptions channel_options;
+	// 多Server负载均衡与容错
+	// 在创建RpcChannel时，可以指定多个功能对等的Server地址.
+	// 在调用服务时，会根据负载均衡策略选择合适的Server发送请求，并自动进行容错和探活处理。
     sofa::pbrpc::RpcChannel rpc_channel(&rpc_client, address_list, channel_options);
 
     // Prepare objects.

@@ -11,7 +11,7 @@
 
 namespace sofa {
 namespace pbrpc {
-
+// 基本的计数器，非线程安全
 class BasicCounter
 {
 public:
@@ -32,7 +32,7 @@ public:
 private:
     uint32_t _counter;
 };
-
+// 原子计数器，线程安全，uint32_t，参见atomic.h
 class AtomicCounter
 {
 public:
@@ -54,6 +54,7 @@ private:
     volatile uint32_t _counter;
 };
 
+// 原子计数器，uint64_t
 class AtomicCounter64
 {
 public:
